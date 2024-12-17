@@ -1,23 +1,36 @@
-#include <../include/bitonic.h>
+#include <../include/sequence.h>
 
-#include <time.h>
-
-Sequence create_sequence(int size){
+Sequence createSeq(int size){
     Sequence s;
     s.size = size;
     s.arr = (int*)malloc(size*sizeof(int));
     return s;
 }
 
-Sequence random_sequence(int size){
-    Sequence s = create_sequence(size);
-    srand(time(NULL));
+Sequence randomSeq(int size){
+    Sequence s = createSeq(size);
     for(int i = 0; i < size; i++){
         s.arr[i] = rand() % 100;
     }
     return s;
 }
 
-void destroy_sequence(Sequence s){
+void printSeq(Sequence s){
+    for(int i = 0; i < s.size; i++){
+        printf("%d ", s.arr[i]);
+    }
+    printf("\n");
+}
+
+bool isSorted(Sequence s){
+    for(int i = 0; i < s.size - 1; i++){
+        if(s.arr[i] > s.arr[i + 1]){
+            return false;
+        }
+    }
+    return true;
+}
+
+void deleteSeq(Sequence s){
     free(s.arr);
 }
