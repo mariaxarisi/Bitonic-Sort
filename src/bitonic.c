@@ -8,7 +8,7 @@ int partner(int rank, int distance) {
 
 //Determines if the process should sort in ascending or descending order (true -> ascending, false -> descending)
 bool ascdesc(int rank, int stage) {
-    return (rank & (1 << (stage - 1))) == 0;
+    return (rank & (1 << stage)) == 0;
 }
 
 //Compares the elements of the local and remote sequences and keeps the min or max elements depending on the stage and distance
@@ -55,8 +55,8 @@ int compareDesc(const void *a, const void *b){
     return (*(int*)b - *(int*)a);
 }
 
-//Sorts the local sequence in ascending or descending order
-void elbowsort(bool order, Sequence local){
+//Sorts the local sequence in ascending or descending order when the stage is 0
+void firstSort(bool order, Sequence local){
     if(order){
         qsort(local.arr, local.size, sizeof(int), compareAsc);
     } else {
@@ -64,3 +64,4 @@ void elbowsort(bool order, Sequence local){
     }
 }
 
+//TODO: Implement the elbowsort algorithm for the next sorting steps (O(n))

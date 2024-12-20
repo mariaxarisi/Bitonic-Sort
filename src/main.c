@@ -20,8 +20,8 @@ int main(int argc, char *argv[]) {
     srand(time(NULL) + rank);
     Sequence local = randomSeq(sizeSeq);
 
+    firstSort(ascdesc(rank, 0), local);
     for(int stage = 1; stage <= log2(size); stage++) {
-        elbowsort(ascdesc(rank, stage), local);
         for(int step = stage; step > 0; step--) {
             int distance = 1 << (step - 1);
             int partner_rank = partner(rank, distance);
@@ -29,8 +29,9 @@ int main(int argc, char *argv[]) {
             minmax(rank, stage, distance, local, remote);
             deleteSeq(remote);
         }
+        //TODO: Implement the elbowSort function and use this instead of the firstSort function
+        firstSort(ascdesc(rank, stage), local);
     }
-    elbowsort(true, local);
 
     Sequence result;
     if (rank == 0) {
