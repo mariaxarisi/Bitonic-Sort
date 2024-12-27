@@ -20,6 +20,8 @@ int main(int argc, char *argv[]) {
     srand(time(NULL) + rank);
     Sequence local = randomSeq(sizeSeq);
 
+    double start = MPI_Wtime();
+
     firstSort(ascdesc(rank, 0), local);
     for(int stage = 1; stage <= log2(size); stage++) {
         for(int step = stage; step > 0; step--) {
@@ -40,15 +42,17 @@ int main(int argc, char *argv[]) {
 
     MPI_Gather(local.arr, sizeSeq, MPI_INT, rank == 0 ? result.arr : NULL, sizeSeq, MPI_INT, 0, MPI_COMM_WORLD);
 
+    double end = MPI_Wtime();
+
     if (rank == 0) {
+        printSeq(result);
         if(isSorted(result)){
             printf("\nSorted Sequence\n");
         } else {
             printf("\nNot Sorted Sequence\n");
         }
-        printSeq(result);
         deleteSeq(result);
-        printf("\n");
+        printf("Execution Time: %f\n", end - start);
     }
 
     deleteSeq(local);
