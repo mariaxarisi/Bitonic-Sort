@@ -42,8 +42,7 @@ void minmax(int rank, int stage, int distance, Sequence local, Sequence remote) 
 //Sends the local sequence to the partner process and receives the remote sequence from the partner process
 Sequence exchange(int partner, Sequence local){
     Sequence remote = createSeq(local.size);
-    MPI_Send(local.arr, local.size, MPI_INT, partner, 0, MPI_COMM_WORLD);
-    MPI_Recv(remote.arr, local.size, MPI_INT, partner, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Sendrecv(local.arr, local.size, MPI_INT, partner, 0, remote.arr, remote.size, MPI_INT, partner, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     return remote;
 }
 

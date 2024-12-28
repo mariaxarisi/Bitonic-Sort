@@ -4,6 +4,10 @@ Sequence createSeq(int size){
     Sequence s;
     s.size = size;
     s.arr = (int*)malloc(size*sizeof(int));
+    if (s.arr == NULL) {
+        fprintf(stderr, "Error: Unable to allocate memory for sequence of size %d\n", size);
+        MPI_Abort(MPI_COMM_WORLD, 1);
+    }
     return s;
 }
 
