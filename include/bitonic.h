@@ -15,5 +15,7 @@ Sequence exchange(int partner, Sequence local);
 int compareAsc(const void *a, const void *b);
 int compareDesc(const void *a, const void *b);
 void firstSort(bool order, Sequence local);
+int findElbow(Sequence s);
+Sequence elbowSort(Sequence s, bool order);
 
 #endif

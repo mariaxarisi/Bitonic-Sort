@@ -3,9 +3,11 @@
 
 #include <mpi.h>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 
-    if(argc != 2 || atoi(argv[1]) < 0) {
+    if (argc != 2 || atoi(argv[1]) < 0)
+    {
         printf("Error: Invalid arguments\n");
         return 1;
     }
@@ -23,35 +25,51 @@ int main(int argc, char *argv[]) {
     double start = MPI_Wtime();
 
     firstSort(ascdesc(rank, 0), local);
-    for(int stage = 1; stage <= log2(size); stage++) {
-        for(int step = stage; step > 0; step--) {
+
+    for (int stage = 1; stage <= log2(size); stage++)
+    {
+        for (int step = stage; step > 0; step--)
+        {
             int distance = 1 << (step - 1);
             int partner_rank = partner(rank, distance);
             Sequence remote = exchange(partner_rank, local);
             minmax(rank, stage, distance, local, remote);
             deleteSeq(remote);
         }
-        //TODO: Implement the elbowSort function and use this instead of the firstSort function
-        firstSort(ascdesc(rank, stage), local);
+        elbowSort(local, ascdesc(rank, stage));
     }
 
+    // Comment if not in use for debugging on local device
     Sequence result;
-    if (rank == 0) {
+    if (rank == 0)
+    {
         result = createSeq(sizeSeq * size);
     }
 
     MPI_Gather(local.arr, sizeSeq, MPI_INT, rank == 0 ? result.arr : NULL, sizeSeq, MPI_INT, 0, MPI_COMM_WORLD);
 
+    if (rank == 0)
+    {
+        printSeq(result);
+        deleteSeq(result);
+    }
+    // End comment
+
+    // Check if the sequence is sorted using MPI
+    bool sorted = isSortedMPI(local, rank, size);
+
     double end = MPI_Wtime();
 
-    if (rank == 0) {
-        printSeq(result);
-        if(isSorted(result)){
+    if (rank == 0)
+    {
+        if (sorted)
+        {
             printf("\nSorted Sequence\n");
-        } else {
+        }
+        else
+        {
             printf("\nNot Sorted Sequence\n");
         }
-        deleteSeq(result);
         printf("Execution Time: %f\n", end - start);
     }
 
