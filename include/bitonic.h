@@ -14,8 +14,8 @@ void minmax(int rank, int stage, int distance, Sequence local, Sequence remote);
 Sequence exchange(int partner, Sequence local);
 int compareAsc(const void *a, const void *b);
 int compareDesc(const void *a, const void *b);
-void firstSort(bool order, Sequence local);
+void firstSort(Sequence local, bool order);
 int findElbow(Sequence s);
-Sequence elbowSort(Sequence s, bool order);
+void elbowSort(Sequence s, bool order);
 
 #endif

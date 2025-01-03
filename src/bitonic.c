@@ -67,8 +67,8 @@ int compareDesc(const void *a, const void *b)
     return (*(int *)b - *(int *)a);
 }
 
-// Sorts the local sequence in ascending or descending order when the stage is 0
-void firstSort(bool order, Sequence local)
+// Sorts the local sequence in ascending or descending order when the stage is 0(no bitonic sequence)
+void firstSort(Sequence local, bool order)
 {
     if (order)
     {
@@ -80,7 +80,6 @@ void firstSort(bool order, Sequence local)
     }
 }
 
-// Finds the elbow (index of minimum element)
 int findElbow(Sequence s)
 {
     int minIndex = 0;
@@ -95,26 +94,21 @@ int findElbow(Sequence s)
 }
 
 // Sorts a bitonic sequence in ascending or descending order
-Sequence elbowSort(Sequence s, bool order)
+void elbowSort(Sequence s, bool order)
 {
     int elbowIndex = findElbow(s);
 
-    if (elbowIndex == -1)
-    {
-        printf("No elbow found. The sequence might not be a valid bitonic sequence.\n");
-        return createSeq(0); // Return an empty sequence if no elbow found
-    }
-
     Sequence sortedSeq = createSeq(s.size);
-
-    int l = elbowIndex;
+    int l = (elbowIndex - 1 + s.size) % s.size;
     int r = (elbowIndex + 1) % s.size;
-    int sortedIndex = 0;
 
-    while (sortedIndex < s.size)
-    {
-        if (order)
-        { // Sorting in ascending order
+    if (order)
+    { // Sorting in ascending order
+        int sortedIndex = 0;
+        sortedSeq.arr[sortedIndex++] = s.arr[elbowIndex];
+
+        while (sortedIndex < s.size)
+        {
             if (s.arr[l] < s.arr[r])
             {
                 sortedSeq.arr[sortedIndex++] = s.arr[l];
@@ -126,20 +120,32 @@ Sequence elbowSort(Sequence s, bool order)
                 r = (r + 1) % s.size; // Wrap around to start if r >= s.size
             }
         }
-        else
-        { // Sorting in descending order
-            if (s.arr[l] > s.arr[r])
+    }
+    else
+    { // Sorting in descending order
+        int sortedIndex = s.size - 1;
+        sortedSeq.arr[sortedIndex--] = s.arr[elbowIndex];
+
+        while (sortedIndex >= 0)
+        {
+            if (s.arr[l] < s.arr[r])
             {
-                sortedSeq.arr[sortedIndex++] = s.arr[l];
-                l = (l - 1 + s.size) % s.size;
+                sortedSeq.arr[sortedIndex--] = s.arr[l];
+                l = (l - 1 + s.size) % s.size; // Wrap around to end if l < 0
             }
             else
             {
-                sortedSeq.arr[sortedIndex++] = s.arr[r];
-                r = (r + 1) % s.size;
+                sortedSeq.arr[sortedIndex--] = s.arr[r];
+                r = (r + 1) % s.size; // Wrap around to start if r >= s.size
             }
         }
     }
 
-    return sortedSeq;
+    for (int i = 0; i < s.size; i++)
+    {
+        s.arr[i] = sortedSeq.arr[i];
+    }
+
+    deleteSeq(sortedSeq);
+    return;
 }
