@@ -1,0 +1,293 @@
+WHEN p = 1
+
+q = 20
+srun -n $(echo $((2**1))) bin/bitonic_sort 20
+Sorted Sequence
+Time: 0.116201 sec
+
+q = 21
+srun -n $(echo $((2**1))) bin/bitonic_sort 21
+Sorted Sequence
+Time: 0.241919 sec
+
+q = 22
+srun -n $(echo $((2**1))) bin/bitonic_sort 22
+Sorted Sequence
+Time: 0.488166 sec
+
+q = 23
+srun -n $(echo $((2**1))) bin/bitonic_sort 23
+Sorted Sequence
+Time: 1.001041 sec
+
+q = 24
+srun -n $(echo $((2**1))) bin/bitonic_sort 24
+Sorted Sequence
+Time: 2.033802 sec
+
+q = 25
+srun -n $(echo $((2**1))) bin/bitonic_sort 25
+Sorted Sequence
+Time: 4.151129 sec
+
+q = 26
+srun -n $(echo $((2**1))) bin/bitonic_sort 26
+Sorted Sequence
+Time: 8.366830 sec
+
+q = 27
+srun -n $(echo $((2**1))) bin/bitonic_sort 27
+Sorted Sequence
+Time: 16.977869 sec
+
+WHEN p = 2
+
+q = 20
+srun -n $(echo $((2**2))) bin/bitonic_sort 20
+Sorted Sequence
+Time: 0.131786 sec
+
+q = 21
+srun -n $(echo $((2**2))) bin/bitonic_sort 21
+Sorted Sequence
+Time: 0.258719 sec
+
+q = 22
+srun -n $(echo $((2**2))) bin/bitonic_sort 22
+Sorted Sequence
+Time: 0.532916 sec
+
+q = 23
+srun -n $(echo $((2**2))) bin/bitonic_sort 23
+Sorted Sequence
+Time: 1.084675 sec
+
+q = 24
+srun -n $(echo $((2**2))) bin/bitonic_sort 24
+Sorted Sequence
+Time: 2.182446 sec
+
+q = 25
+srun -n $(echo $((2**2))) bin/bitonic_sort 25
+Sorted Sequence
+Time: 4.411259 sec
+
+q = 26
+srun -n $(echo $((2**2))) bin/bitonic_sort 26
+Sorted Sequence
+Time: 8.985076 sec
+
+q = 27
+srun -n $(echo $((2**2))) bin/bitonic_sort 27
+Sorted Sequence
+Time: 18.277187 sec
+
+WHEN p = 3
+
+q = 20
+srun -n $(echo $((2**3))) bin/bitonic_sort 20
+Sorted Sequence
+Time: 0.145424 sec
+
+q = 21
+srun -n $(echo $((2**3))) bin/bitonic_sort 21
+Sorted Sequence
+Time: 0.294648 sec
+
+q = 22
+srun -n $(echo $((2**3))) bin/bitonic_sort 22
+Sorted Sequence
+Time: 0.574739 sec
+
+q = 23
+srun -n $(echo $((2**3))) bin/bitonic_sort 23
+Sorted Sequence
+Time: 1.217888 sec
+
+q = 24
+srun -n $(echo $((2**3))) bin/bitonic_sort 24
+Sorted Sequence
+Time: 2.488130 sec
+
+q = 25
+srun -n $(echo $((2**3))) bin/bitonic_sort 25
+Sorted Sequence
+Time: 5.238286 sec
+
+q = 26
+srun -n $(echo $((2**3))) bin/bitonic_sort 26
+Sorted Sequence
+Time: 10.116469 sec
+
+q = 27
+srun -n $(echo $((2**3))) bin/bitonic_sort 27
+Sorted Sequence
+Time: 20.378936 sec
+
+WHEN p = 4
+
+q = 20
+srun -n $(echo $((2**4))) bin/bitonic_sort 20
+Sorted Sequence
+Time: 0.178211 sec
+
+q = 21
+srun -n $(echo $((2**4))) bin/bitonic_sort 21
+Sorted Sequence
+Time: 0.353860 sec
+
+q = 22
+srun -n $(echo $((2**4))) bin/bitonic_sort 22
+Sorted Sequence
+Time: 0.727970 sec
+
+q = 23
+srun -n $(echo $((2**4))) bin/bitonic_sort 23
+Sorted Sequence
+Time: 1.606918 sec
+
+q = 24
+srun -n $(echo $((2**4))) bin/bitonic_sort 24
+Sorted Sequence
+Time: 3.229157 sec
+
+q = 25
+srun -n $(echo $((2**4))) bin/bitonic_sort 25
+Sorted Sequence
+Time: 6.917823 sec
+
+q = 26
+srun -n $(echo $((2**4))) bin/bitonic_sort 26
+Sorted Sequence
+Time: 12.998864 sec
+
+q = 27
+srun -n $(echo $((2**4))) bin/bitonic_sort 27
+Sorted Sequence
+Time: 25.998997 sec
+
+WHEN p = 5
+
+q = 20
+srun -n $(echo $((2**5))) bin/bitonic_sort 20
+Sorted Sequence
+Time: 0.261972 sec
+
+q = 21
+srun -n $(echo $((2**5))) bin/bitonic_sort 21
+Sorted Sequence
+Time: 0.565904 sec
+
+q = 22
+srun -n $(echo $((2**5))) bin/bitonic_sort 22
+Sorted Sequence
+Time: 1.097965 sec
+
+q = 23
+srun -n $(echo $((2**5))) bin/bitonic_sort 23
+Sorted Sequence
+Time: 2.429730 sec
+
+q = 24
+srun -n $(echo $((2**5))) bin/bitonic_sort 24
+Sorted Sequence
+Time: 5.086667 sec
+
+q = 25
+srun -n $(echo $((2**5))) bin/bitonic_sort 25
+Sorted Sequence
+Time: 10.385710 sec
+
+q = 26
+srun -n $(echo $((2**5))) bin/bitonic_sort 26
+Sorted Sequence
+Time: 19.951217 sec
+
+q = 27
+srun -n $(echo $((2**5))) bin/bitonic_sort 27
+Sorted Sequence
+Time: 42.172521 sec
+
+WHEN p = 6
+
+q = 20
+srun -n $(echo $((2**6))) bin/bitonic_sort 20
+Sorted Sequence
+Time: 0.523416 sec
+
+q = 21
+srun -n $(echo $((2**6))) bin/bitonic_sort 21
+Sorted Sequence
+Time: 1.058820 sec
+
+q = 22
+srun -n $(echo $((2**6))) bin/bitonic_sort 22
+Sorted Sequence
+Time: 2.223659 sec
+
+q = 23
+srun -n $(echo $((2**6))) bin/bitonic_sort 23
+Sorted Sequence
+Time: 4.997423 sec
+
+q = 24
+srun -n $(echo $((2**6))) bin/bitonic_sort 24
+Sorted Sequence
+Time: 9.942701 sec
+
+q = 25
+srun -n $(echo $((2**6))) bin/bitonic_sort 25
+Sorted Sequence
+Time: 21.014736 sec
+
+q = 26
+srun -n $(echo $((2**6))) bin/bitonic_sort 26
+Sorted Sequence
+Time: 41.525957 sec
+
+q = 27
+srun -n $(echo $((2**6))) bin/bitonic_sort 27
+Sorted Sequence
+Time: 83.232872 sec
+
+WHEN p = 7
+
+q = 20
+srun -n $(echo $((2**7))) bin/bitonic_sort 20
+Sorted Sequence
+Time: 1.255273 sec
+
+q = 21
+srun -n $(echo $((2**7))) bin/bitonic_sort 21
+Sorted Sequence
+Time: 2.453505 sec
+
+q = 22
+srun -n $(echo $((2**7))) bin/bitonic_sort 22
+Sorted Sequence
+Time: 5.084962 sec
+
+q = 23
+srun -n $(echo $((2**7))) bin/bitonic_sort 23
+Sorted Sequence
+Time: 11.738103 sec
+
+q = 24
+srun -n $(echo $((2**7))) bin/bitonic_sort 24
+Sorted Sequence
+Time: 23.225151 sec
+
+q = 25
+srun -n $(echo $((2**7))) bin/bitonic_sort 25
+Sorted Sequence
+Time: 46.923759 sec
+
+q = 26
+srun -n $(echo $((2**7))) bin/bitonic_sort 26
+Sorted Sequence
+Time: 89.015923 sec
+
+q = 27
+srun -n $(echo $((2**7))) bin/bitonic_sort 27
+Sorted Sequence
+Time: 191.482188 sec
