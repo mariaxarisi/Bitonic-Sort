@@ -1,0 +1,77 @@
+Q = 21
+
+./bin/serialBitonic 21
+-----------Serial Bitonic Sort-----------
+Sorted Sequence
+Time: 3.137196 sec
+-----------QSort-----------
+Sorted Sequence
+Time: 0.190815 sec
+
+
+Q = 22
+
+./bin/serialBitonic 22
+-----------Serial Bitonic Sort-----------
+Sorted Sequence
+Time: 6.600786 sec
+-----------QSort-----------
+Sorted Sequence
+Time: 0.402216 sec
+
+
+Q = 23
+
+./bin/serialBitonic 23
+-----------Serial Bitonic Sort-----------
+Sorted Sequence
+Time: 14.120427 sec
+-----------QSort-----------
+Sorted Sequence
+Time: 0.796269 sec
+
+
+Q = 24
+
+./bin/serialBitonic 24
+-----------Serial Bitonic Sort-----------
+Sorted Sequence
+Time: 29.803261 sec
+-----------QSort-----------
+Sorted Sequence
+Time: 1.662552 sec
+
+
+Q = 25
+
+./bin/serialBitonic 25
+-----------Serial Bitonic Sort-----------
+Sorted Sequence
+Time: 63.689509 sec
+-----------QSort-----------
+Sorted Sequence
+Time: 3.448252 sec
+
+
+Q = 26
+
+./bin/serialBitonic 26
+-----------Serial Bitonic Sort-----------
+Sorted Sequence
+Time: 132.791218 sec
+-----------QSort-----------
+Sorted Sequence
+Time: 7.053688 sec
+
+
+Q = 27
+
+./bin/serialBitonic 27
+-----------Serial Bitonic Sort-----------
+Sorted Sequence
+Time: 280.614357 sec
+-----------QSort-----------
+Sorted Sequence
+Time: 14.915154 sec
+
+

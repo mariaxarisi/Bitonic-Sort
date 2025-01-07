@@ -20,9 +20,11 @@ int main(int argc, char *argv[])
     int sizeSeq = atoi(argv[1]);
     sizeSeq = 1 << sizeSeq;
 
+    //Create a random local sequence
     srand(time(NULL) + rank);
     Sequence local = randomSeq(sizeSeq);
 
+    //Distributed bitonic sort
     double start = MPI_Wtime();
 
     firstSort(local, ascdesc(rank, 0));
@@ -42,6 +44,7 @@ int main(int argc, char *argv[])
 
     double end = MPI_Wtime();
 
+    //Check if the sequence is sorted
     bool sorted = isSortedMPI(local, rank, size);
     bool *all_sorted = NULL;
 
@@ -68,9 +71,36 @@ int main(int argc, char *argv[])
         free(all_sorted);
     }
     
+    //Prin the execution time
     if (rank == 0)
     {
         printf("Time: %f sec\n", end - start);
+    }
+
+    //Print the sorted sequence
+    char c;
+    if (rank == 0){
+        printf("Do you want to print the sorted sequence? (y/n): ");
+        while (scanf(" %c", &c) != 1 || (c != 'y' && c != 'n')) {
+            printf("Error: Invalid input. Please enter 'y' or 'n': ");
+            while (getchar() != '\n');
+        }
+    }
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Bcast(&c, 1, MPI_CHAR, 0, MPI_COMM_WORLD);
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    if (c == 'y'){
+        Sequence result;
+        if(rank == 0){
+            result = createSeq(sizeSeq*size);
+        }
+        MPI_Gather(local.arr, sizeSeq, MPI_INT, rank == 0 ? result.arr : NULL, sizeSeq, MPI_INT, 0, MPI_COMM_WORLD);
+        if(rank == 0){
+            printSeq(result);
+            deleteSeq(result);
+        }
     }
 
     deleteSeq(local);
