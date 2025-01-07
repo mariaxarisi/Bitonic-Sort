@@ -36,12 +36,16 @@
 ]{definitionbox}
 
 \title{\textbf{Distributed Bitonic Sort with MPI}}
-\author{Maria Charisi\\Maria Kostomanolaki}
+\author{Maria Charisi\\Maria Sotiria Kostomanolaki}
 \date{\today}
 
 \begin{document}
 
 \maketitle
+
+\begin{abstract}
+This project implements a distributed sorting program using \textbf{MPI}, based on the \texttt{Bitonic Sort} algorithm. The program sorts \( N = 2^{(q + p)} \) integers in ascending order across \( 2^p \) processes, each starting with \( 2^q \) random integers. It follows the \texttt{Bitonic Sort} method, combining local sorting and data exchange between processes to achieve the final result. The program validates the sorting and compares the performance of the parallel implementation for different values of \( q \) and \( p \). To evaluate the efficiency of the parallel approach, the program was tested on the Aristotelis cluster for high-scale performance and was also tested on a local machine to compare the parallel implementation against the sequential one.
+\end{abstract}
 
 \tableofcontents
 
@@ -55,7 +59,7 @@
 
 \section{Serial Bitonic Sort}
 
-Understanding \textit{Distributed Bitonic Sort} requires first examining the serial implementation of the algorithm.
+Understanding \texttt{Distributed Bitonic Sort}, requires a first examination of the concepts of a bitonic sequence, the Bitonic Theorem, and the serial implementation of the algorithm.
 
 \subsection{Bitonic Sequence}
 
@@ -63,8 +67,7 @@ Understanding \textit{Distributed Bitonic Sort} requires first examining the ser
 A \textbf{Bitonic Sequence} is a sequence of integers that first increases monotonically and then decreases monotonically (or vice versa). The reverse of a bitonic sequence or any cyclic rotation of it also forms a bitonic sequence.
 \end{definitionbox}
 
-For example, the sequence [6, 4, 3, 1, 2, 5, 8, 7] is bitonic, because when the last 7 is rotated to the beginning, the resulting sequence is decreasing and then increasing.
-
+To elaborate on the last point with an example, the sequence [6, 4, 3, 1, 2, 5, 8, 7] is bitonic. When the last element, 7, is rotated to the beginning, the resulting sequence [7, 6, 3, 1, 2, 5, 8] satisfies the bitonic property.
 
 \subsection{Bitonic Merge}
 
@@ -72,7 +75,7 @@ For example, the sequence [6, 4, 3, 1, 2, 5, 8, 7] is bitonic, because when the 
 \textbf{Bitonic Theorem:} The element-wise comparison of the first half of a bitonic sequence with its second half, along with the separation into minima and maxima subsequences, also results in bitonic sequences.
 \end{definitionbox}
 
-\textbf{Bitonic Merge} is a function that takes a bitonic sequence as input, where the length is a power of two, and outputs a sorted sequence. Bitonic Merge recursively applies the \textit{Bitonic Theorem} and stores first the minima and then the maxima sequence, as demonstrated in the following example:
+\textbf{Bitonic Merge} is an algorithm that takes a bitonic sequence with a length that is a power of two and returns a sorted sequence. \texttt{Bitonic Merge} recursively applies the \textit{Bitonic Theorem} and stores first the minima and then the maxima sequence, as demonstrated in the following example:
 
 \begin{figure}[H]
     \centering
@@ -85,8 +88,10 @@ If we assume that the input sequence has length $n$, then:
 
 \begin{itemize} 
 \item Element-wise comparisons between the two halves of the sequence have a time complexity of $O(n)$.
-\item Bitonic Merge calls itself twice: once for the minima sequence and once for the maxima sequence. Therefore, it is recursively called $log(n)$ times. 
+\item \texttt{Bitonic Merge} calls itself twice: once for the minima sequence and once for the maxima sequence and it is recursively called $log(n)$ times. 
 \end{itemize}
+
+Below is the serial implementation of the \texttt{Bitonic Merge} algorithm, where \texttt{m} represents the size of the sequence or subsequence being processed in the current recursion and \texttt{min.arr[]} and \texttt{max.arr[]} are the respective minima and maxima subsequences.
 
 \begin{lstlisting}[language=C]
     for(int i = 0; i < m; i++){
@@ -104,11 +109,11 @@ If we assume that the input sequence has length $n$, then:
     max = bmerge(max, order);
 \end{lstlisting}
 \vspace{0.3cm}
-So, the \textbf{time complexity} of Bitonic Merge is:
+Therefore, the \textbf{time complexity} of \texttt{Bitonic Merge} is:
 \[T_M(n) = 2T_M(n/2) + O(n) = O(nlog(n))\]
 
 \subsection{Bitonic Sort}
-\textit{Bitonic Sort} takes an arbitrary sequence of integers as input and transforms it into a bitonic sequence. It achieves this by recursively calling itself, sorting the first half in one direction and the second half in the opposite direction. The next step is to call \textit{Bitonic Merge} to sort the resulting bitonic sequence.
+\textbf{Bitonic Sort} takes an arbitrary sequence of integers as input and transforms it into a bitonic sequence. It achieves this by recursively dividing the sequence, sorting each half in opposite orders. Following that, it calls \texttt{Bitonic Merge} to merge the bitonic sequence into the desired order, resulting in a fully sorted sequence.
 \vspace{0.3cm}
 \begin{lstlisting}[language=C]
     l = bsort(l, true); //First half ascending order
@@ -123,7 +128,7 @@ So, the \textbf{time complexity} of Bitonic Merge is:
     b = bmerge(b, order);
 \end{lstlisting}
 \vspace{0.3cm}
-Taking into account the algorithm above, the \textbf{time complexity} of the Bitonic Sort is:
+Taking into account the algorithm above, the \textbf{time complexity} of the \texttt{Bitonic Sort} is:
 
 \[T_S(n) = 2 T_S(n/2) + T_M(n) = O(n (\log n)^2)\]
 
@@ -131,59 +136,64 @@ Taking into account the algorithm above, the \textbf{time complexity} of the Bit
 
 \section{Distributed Bitonic Sort}
 
-We can understand that there are serial sorting algorithms that have much better performance than the bitonic sort. Specifically, bitonic sort has \(O(n (\log n)^2)\) complexity, whereas other algorithms such as merge sort have \(O(n \log n)\) complexity. However, bitonic sort is useful because it is well-suited for parallel and distributed implementations.
+Although \texttt{Bitonic Sort} is a serial sorting algorithm and is slower than other similar algorithms, such as \texttt{Merge Sort} which has a time complexity of \(O(n \log n)\) compared to \texttt{Bitonic Sort}'s \(O(n (\log n)^2)\), it possesses useful properties that are well-suited for parallel and distributed implementations.
 
-The \textit{Distributed Bitonic Sort} takes two integers, \( p \) and \( q \), as input. \( p \) defines the number of processes, specifically \textbf{\( 2^p \) processes} will start, and each process will handle \textbf{\( 2^q \) numbers}. In the end, every process will sort its numbers locally. If we then gather all the numbers from all processes in order (first the chunk from the first process, and so on), we will end up with a sorted sequence in ascending order. The final sequence will have a length of \( N = 2^{p+q} \). Inner-process communication will be achieved by using \textbf{Message Passing Interface (MPI)}.
+The \texttt{Distributed Bitonic Sort} takes two integers, \textbf{\( p \)} and \textbf{\( q \)}, as input. The algorithm sorts a sequence of \textbf{\( N = 2^{(q + p)} \)} integers in ascending order across \textbf{\( 2^p \)} processes, with each process starting with \textbf{\( 2^q \)} random integers. Initially, each process sorts its local elements. Then, using the properties of \texttt{Bitonic Sort} and the \textit{Bitonic Theorem}, the algorithm uses inter-process communication via the \textbf{Message Passing Interface (MPI)} to combine the sorted local sequences and produce the final globally sorted sequence.
 
-\subsection{Brief Explanation}
-As an introduction, we will briefly analyze the algorithm step by step. As we already mentioned, we start with \(2^p\) processes, and every process takes a sequence of length \(2^q\).
+\subsection{Step by Step Explanation}
+
+Below is a step by step analysis of the behavior of the algorithm. Please note that this analysis is concise; for a complete understanding, the reader should refer to the source code.
+
+For the purpose of our implementation we define:
+\begin{lstlisting}[language=C]
+    typedef struct {
+    int *arr;
+    int size;
+    } Sequence;
+\end{lstlisting}
+
+ The program starts with the execution of the command \texttt{make run P=<p> Q=<q>},which specifies the number of processes to be used (\(2^p\)) and the respective lengths (\(2^q\)) of the \texttt{Sequence}s assigned to each process.
 
 \begin{itemize}
-    \item At first, every process will sort its sequence in ascending or descending order (based on the rank of the process). For this sorting, we will use the \texttt{qsort()} function from the C \texttt{stdlib} library, with complexity \(O(n \log n)\).
+    \item At first, every process sorts its local sequence in ascending or descending order, which is determined using the \texttt{ascdesc(rank,stage)} method. For this sorting, we use the \texttt{qsort()} function from the C \texttt{stdlib} library, with time complexity \(O(n \log n)\).
     
-    \item Next, we will enter a loop that will execute \(p\) times. At every iteration (stage), processes will communicate and exchange elements. Specifically, in the first iteration, there will be one step of communication, in the second, two steps, and so on.
+    \item Next, we enter a loop which is executed exactly \(p\) times. At every iteration (\texttt{stage}), processes communicate and exchange elements with their neighbor processes. Specifically, in the first iteration, there is one step of communication, in the second one there are two steps and so on.
     
-    \item These communications will not be random. At each step, each process will communicate with a specific partner at a certain distance. They will compare their numbers elementwise, and depending on the current stage, one will keep the minimums, and the other will keep the maximums.
+    \item These communications are not random. At each \texttt{stage} and \texttt{step}, each process communicates with a specific \texttt{partner} at a defined \texttt{distance}, which increases as the number of \texttt{step}s progresses. The processes compare their elements element-wise, and depending on the current \texttt{stage}, one process keeps the minimum values, while the other keeps the maximum values.
     
-    \item At the end of each iteration, each process will end up with a bitonic sequence, which will be sorted again using the \texttt{elbowsort} function instead of \texttt{qsort}. The \texttt{elbowsort} function has \(O(n)\) complexity and only sorts bitonic sequences.
+    \item At the end of each \texttt{stage}, each process holds a bitonic sequence, which is sorted using the \texttt{elbowSort} function, which has a time complexity of \(O(n)\), instead of \texttt{qsort}. A detailed description of \texttt{elbowSort} can be found in \textbf{Section 2.6}.
 \end{itemize}
 
 \begin{lstlisting}[language=C]
     firstSort(local, ascdesc(rank, 0));
-
     for (int stage = 1; stage <= log2(size); stage++){
         for (int step = stage; step > 0; step--){
             int distance = 1 << (step - 1);
             int partner_rank = partner(rank, distance);
             Sequence remote = exchange(partner_rank, local);
             minmax(rank, stage, distance, local, remote);
-            deleteSeq(remote);
-        }
-        elbowSort(local, ascdesc(rank, stage));
-    }
+            deleteSeq(remote); }
+        elbowSort(local, ascdesc(rank, stage));}
 \end{lstlisting}
-
-The functions \texttt{partner}, \texttt{exchange}, \texttt{minmax}, \texttt{ascdesc}, and \texttt{elbowSort} will be explained further.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{distributedBitonic.png}
-    \caption{Distributed Bitonic for 8 processes}
+    \caption{Example of Distributed Bitonic Sort for 8 processes}
     \label{fig:enter-label}
 \end{figure}
 
-In the above figure, the rectangle represents a process. Each row is a step of the algorithm, and it is either a communication step or a sorting step.
-\newpage
+In the above figure, each rectangle represents a process. Each row is a step of the algorithm, and it is either a communication step or a sorting step.
 
 \subsection{Partner}
-The rank of the partner process can be easily calculated if the current communication distance is known. The distance depends on the current stage of the algorithm, is always a power of two, and ranges from \( 2^{\text{stage}-1} \text{ to } 2^0 \)
+The rank of the \texttt{partner} process can be easily calculated using the current communication \texttt{distance} and the local process's rank. The \texttt{distance} depends on the current \texttt{stage} of the algorithm and is always a power of two, ranging between \( 2^{\text{stage}-1} \text{ and } 2^0 \). Below is a reference table of the \texttt{partner} pairs as they are formed by the following experession:
 
 \[\text{rank} \oplus \text{distance}\]
 \begin{table}[h]
     \centering
     \begin{tabular}{|c|c|c|c|c|}
         \hline
-        \textbf{Decimal} & \textbf{Binary} & \textbf{XOR with 1} & \textbf{XOR with 2} & \textbf{XOR with 4} \\ \hline
+        \textbf{Decimal} & \textbf{Binary} & \textbf{XOR with distance 1} & \textbf{XOR with distance 2} & \textbf{XOR with distance 4} \\ \hline
         0 & 000 & 001 & 010 & 100 \\ \hline
         1 & 001 & 000 & 011 & 101 \\ \hline
         2 & 010 & 011 & 000 & 110 \\ \hline
@@ -208,15 +218,25 @@ Communication between processes is achieved through the \texttt{exchange} functi
         return remote;
     }
 \end{lstlisting}
-
+\newpage
 \subsection{Maxima or Minima}
-Each process compares all its local elements with the remote ones element-wise and keeps either the \textbf{minimums} or the \textbf{maximums}. This decision is crucial for the final result and depends on the current stage and distance.
+After receiving data from its remote partner, each process performs an element-wise comparison between its local elements and the remote ones. It then keeps either the \textbf{minimums} or the \textbf{maximums}. This decision is crucial for the final result and depends on the current \texttt{stage} and \texttt{distance}.
 
-To understand the motif behind the algorithm, we can imagine that at each stage, a mirror is placed before the process with rank \( 2^{\text{stage}} \). These mirrors are depicted in Figure 2 with green vertical lines. Each mirror has a width equal to \( 2 \times 2^{\text{stage}} \), and the processes with ranks in the range \([0, 2^{\text{stage}} - 1]\) are reflections of the processes with ranks in the range \([2^{\text{stage}}, 2 \times 2^{\text{stage}} - 1]\). This pattern repeats until the end of the sequence.
+The algorithm behind this decision-making can be better understood through a mirror analogy. At each \texttt{stage}, a mirror is placed in front of the process with rank \( 2^{\text{stage}} \). These mirrors, represented by green vertical lines in \textbf{Figure 2}, have a width of \( 2 \times 2^{\text{stage}} \). The processes with ranks in the range \([0, 2^{\text{stage}} - 1]\) are \textbf{reflections} of those with ranks in the range \([2^{\text{stage}}, 2 \times 2^{\text{stage}} - 1]\). This pattern repeats until the end of the global sequence.
 
-Taking advantage of this motif, we simply calculate the modulo of the rank with the width of the mirror and then find the reflection of the outcome from the first mirror. The ranks that are placed to the left and right of the mirror have a reflection equal to zero, and so on. 
+To identify a process’s reflection within this mirror system, we first calculate its position relative to the mirror’s width using: \texttt{pos} = \texttt{rank \% w} ,where \( w = 2 \times 2^{\text{stage}} \).
 
-Now that we have the reflection, the criterion that determines whether the process will keep the minimums or the maximums is the distance. Specifically, we will retain the \( \log_2(\text{distance}) \)-th bit from the right of the rank. If this bit is equal to zero, the process will keep the maximums; otherwise, it will keep the minimums.
+Using this position, the reflection is computed as:
+\begin{itemize}
+    \item For processes on the left of the mirror (\( \texttt{pos} < \texttt{mirror} \)), the reflection is \( \texttt{mirror} - \texttt{pos} - 1 \).
+    \item For processes on the right (\( \texttt{pos} \geq \texttt{mirror} \)), the reflection is \( \texttt{pos} - \texttt{mirror} \).
+\end{itemize}
+
+With the reflection determined, the decision to keep either the \textbf{minimums} or the \textbf{maximums} is based on the \texttt{distance}. Specifically, the algorithm examines the \( \log_2(\texttt{distance}) \)-th bit (counting from the right) of the process's rank:
+\begin{itemize}
+    \item If the bit is \( 0 \), the process retains the \textbf{maximums}.
+    \item If the bit is \( 1 \), it retains the \textbf{minimums}.
+\end{itemize}
 
 \vspace{0.3cm}
 \begin{lstlisting}[language=C]
@@ -237,6 +257,10 @@ void minmax(int rank, int stage, int distance, Sequence local, Sequence remote)
 }
 
 \end{lstlisting}
+\newpage
+Below is a reference table that illustrates the logic for \texttt{stage} 2 of the \texttt{Distributed Bitonic Sort} with 8 processes. In this \texttt{stage}, there are two communication \texttt{step}s. The first \texttt{step} involves a \texttt{distance} of 2, and the second \texttt{step} involves a \texttt{distance} of 1. In both \texttt{step}s, a single mirror is ``placed'' in front of rank 4.
+
+During the first communication \texttt{step}, the decision to retain either the minimums or maximums is based on the second bit from the right of the process's rank. In the second communication \texttt{step}, this decision is made using the first bit from the right of the rank.
 
 \begin{table}[h]
     \centering
@@ -255,30 +279,28 @@ void minmax(int rank, int stage, int distance, Sequence local, Sequence remote)
     \caption{Stage 2 for 8 processes}
     \label{tab:xor}
 \end{table}
-\newpage
 
 \subsection{Ascending or Descending}
-At the end of every stage, each process sorts its elements in ascending or descending order. The function \texttt{ascdesc} defines this order in a manner similar to the approach used previously with the reflection. For example, in the first sort (stage 0), we keep the first bit from the right. If this bit is equal to zero, the process sorts its local array in ascending order; otherwise, it sorts it in descending order.
+At the end of every \texttt{stage}, each process sorts its elements in ascending or descending order. The function \texttt{ascdesc} defines this order in a manner similar to the approach used previously with the reflection. For example, in the first sort (stage 0), we keep the first bit from the right. If this bit is equal to zero, the process sorts its local array in ascending order; otherwise, it sorts it in descending order.
 \[\texttt{rank} \ \&  \ (1 \ll \texttt{stage})\]
 
 \subsection{Elbow Sort}
-As we have mentioned earlier, at the end of each stage, all processes will have a bitonic sequence. Therefore, instead of using \texttt{qsort} for sorting the sequence, we will use \texttt{elbowSort}.
+At the end of each stage, all processes hold a bitonic sequence. To increase time efficiency, the \texttt{Distributed Bitonic Sort} algorithm takes advantage of this characteristic and uses \texttt{elbowSort} for sorting instead of \texttt{qsort}.
 
-The function \texttt{elbowSort} takes a bitonic sequence as input and sorts it in the desired order. It begins by identifying the \textbf{"elbow"} of the bitonic sequence. We define the elbow of a bitonic sequence as the element such that all elements before it are monotonically decreasing (or increasing), and all elements after it are monotonically increasing (or decreasing). 
+The \texttt{elbowSort} function takes a bitonic sequence as an input and sorts it in the desired order, designated by the \texttt{ascdesc} function. It begins by identifying the \textbf{"elbow"} of the bitonic sequence, which is defined as the element for which all elements before it are monotonically decreasing (or increasing), and all elements after it are monotonically increasing (or decreasing). 
 
-It is clear that only the elements with the \textbf{minimum} or \textbf{maximum} value can serve as the elbow of the sequence. If these elements were placed elsewhere, they would disrupt the monotonic increase or decrease. Furthermore, sequences like \([6, 4, 3, 1, 2, 5, 8, 7]\) are not problematic because they always have a cyclic rotation with a correct elbow candidate, like this one \([7, 6, 4, 3, 1, 2, 5, 8]\).
+It is important to note that only the \textbf{minimum} or \textbf{maximum} elements can serve as the elbow of the sequence. If these elements were placed elsewhere, they would disrupt the monotonic increase or decrease, which is a required property for the sequence to be considered bitonic. Furthermore, sequences like \([6, 4, 3, 1, 2, 5, 8, 7]\) are still considered bitonic sequences because they always have a cyclic rotation with a correct elbow candidate, such as this one \([7, 6, 4, 3, 1, 2, 5, 8]\).
 
-In our case, we choose the minimum element as the elbow and take advantage of the fact that all the elements before and after it are already sorted. We place the elbow in the correct position (at the beginning if we are sorting in ascending order, or at the end if sorting in descending order). Then, we place \textbf{two pointers}: one to the \textbf{left} and one to the \textbf{right} of the elbow.
+For this implementation, we have chosen to consider the \textbf{minimum} element as the elbow and take advantage of the fact that all the elements before and after it are already sorted. We start by placing the elbow in the correct position which according to the sorting order, is either at the start of the sequence, if sorting in ascending order, or at the end of it, if sorting in descending order. After that, we place \textbf{two pointers}: one to the \textbf{left} and one to the \textbf{right} of the elbow.
 \vspace{0.3cm}
 \begin{lstlisting}[language=C]
     int l = (elbowIndex - 1 + s.size) % s.size;
     int r = (elbowIndex + 1) % s.size;
 \end{lstlisting}
 \vspace{0.3cm}
-From this point, we compare the two pointers. The smaller element will take the next position in the sequence. The pointer corresponding to the smaller element will then move one step to the right (if referring to the right pointer) or one step to the left (if referring to the left pointer). This process continues until the entire sequence is sorted.
+The algorithm then compares the elements at the two pointers. The smaller element of the two will take the next position in the sequence and its corresponding pointer will then move one step to the right (if referring to the right pointer) or one step to the left (if referring to the left pointer). This process continues until the entire sequence is sorted.
 
-When a pointer reaches the end of the sequence, it will wrap around to the beginning (and vice versa for the opposite pointer). This way, we ensure that cases like the one we mentioned earlier are sorted correctly.
-\newpage
+When a pointer reaches the end of the sequence, it wraps around to the beginning (and vice versa for the opposite pointer) to ensure that cases like the one we mentioned earlier are sorted correctly.
 
 \vspace{0.3cm}
     \begin{lstlisting}[language=C]
@@ -304,13 +326,26 @@ When a pointer reaches the end of the sequence, it will wrap around to the begin
 \end{lstlisting}
 \newpage
 \section{Results}
-For testing, we executed our program on the \textbf{Rome} partition of the \textbf{Aristotle cluster}, provided by Aristotle University of Thessaloniki. The Rome partition consists of 17 nodes with 128 CPU cores per node. To test our program, we utilized all 128 CPU cores of a single node, and the following results were obtained:
+For testing, we executed our program on the \textbf{Rome} partition of the \textbf{Aristotle cluster}, provided by Aristotle University of Thessaloniki. The Rome partition consists of 17 nodes with 128 CPU cores per node. To test our implementation at high scale ranged, we utilized all 128 CPU cores of a single node, and the following results were obtained:
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{results.png}
-    \caption{Performance}
+    \caption{Performance of Distributed Bitonic Sort}
     \label{fig:enter-label}
 \end{figure}
+
+To verify the speedup of our algorithm, we have created the following plot comparing the performance of \texttt{qsort} and the serial implementation of \texttt{Bitonic Sort} against \texttt{Distributed Bitonic Sort} across different datasets (varying values of \(q\)). The plot clearly demonstrates that \texttt{Distributed Bitonic Sort} outperforms both \texttt{qsort} and serial \texttt{Bitonic Sort}. While the speedup for \(p=1\) is minimal, the speedup becomes significant as the number of processes increases, particularly for datasets where \(q=21\) and \(q=22\).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{speed.png}
+    \caption{Speed comparison against \texttt{qsort} and serial Bitonic Sort}
+    \label{fig:enter-label}
+\end{figure}
+
+\section{Conclusion}
+
+In this report, we explored the implementation of the \texttt{Distributed Bitonic Sort} algorithm, with a focus on leveraging parallelism through \texttt{MPI} to optimize sorting tasks in a distributed environment. The results demonstrated the scalability of our approach, showcasing the potential of \texttt{MPI} to significantly accelerate algorithms as the number of processes increases.
 
 \end{document}

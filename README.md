@@ -2,7 +2,9 @@
 
 ## Project Description
 
-This project implements a distributed sorting program using **MPI**, based on the Bitonic Sort algorithm.The program sorts \( N = 2^{(q + p)} \) integers in ascending order across \( 2^p \) processes, each starting with \( 2^q \) random integers. It follows the Bitonic Sort method, combining local sorting and data exchange between processes to achieve the final result. The program validates the sorting and compares the performance of the parallel implementation to a serial sort for different values of \( q \) and \( p \), using the Aristotelis system for testing.
+This project implements a distributed sorting program using **MPI**, based on the Bitonic Sort algorithm. The program sorts \( N = 2^{(q + p)} \) integers in ascending order across \( 2^p \) processes, each starting with \( 2^q \) random integers. It follows the Bitonic Sort method, combining local sorting and data exchange between processes to achieve the final result. The program validates the sorting and compares the performance of the parallel implementation for different values of \( q \) and \( p \). 
+
+To evaluate the efficiency of the parallel approach, the program was tested on the **Aristotelis cluster** for high-scale performance. It was also tested against qSort and serial BitonicSort to verify speedup achievement.
 
 For a detailed description of the algorithm and implementation, please refer to the project [report](docs/report.pdf)
 
@@ -43,10 +45,7 @@ For a detailed description of the algorithm and implementation, please refer to 
     ```bash
     Sorted Sequence
     Time: <Execution Time>
-    Do you want to print the sorted sequence? (y/n):
     ```
-
-    **Note**: If you want to see the sorted sequence, press the character 'y' and then enter. However, ensure first that there is enough space to gather all the numbers in one process.
 
 6. **Clean up** the directory of the files generated using the following command:
     ```bash
