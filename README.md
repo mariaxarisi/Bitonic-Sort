@@ -45,7 +45,10 @@ For a detailed description of the algorithm and implementation, please refer to 
     ```bash
     Sorted Sequence
     Time: <Execution Time>
+    Do you want to print the sorted sequence? (y/n):
     ```
+
+    **Note**: If you want to see the sorted sequence, press the character 'y' and then enter. However, ensure first that there is enough space to gather all the numbers in one process.
 
 6. **Clean up** the directory of the files generated using the following command:
     ```bash
