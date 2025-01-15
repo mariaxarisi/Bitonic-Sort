@@ -44,7 +44,9 @@
 \maketitle
 
 \begin{abstract}
-This project implements a distributed sorting program using \textbf{MPI}, based on the \texttt{Bitonic Sort} algorithm. The program sorts \( N = 2^{(q + p)} \) integers in ascending order across \( 2^p \) processes, each starting with \( 2^q \) random integers. It follows the \texttt{Bitonic Sort} method, combining local sorting and data exchange between processes to achieve the final result. The program validates the sorting and compares the performance of the parallel implementation for different values of \( q \) and \( p \). To evaluate the efficiency of the parallel approach, the program was tested on the Aristotelis cluster for high-scale performance and was also tested on a local machine to compare the parallel implementation against the sequential one.
+    This project implements a distributed sorting program using \textbf{MPI}, based on the \texttt{Bitonic Sort} algorithm. The program sorts \( N = 2^{(q + p)} \) integers in ascending order across \( 2^p \) processes, each starting with \( 2^q \) random integers. It follows the \texttt{Bitonic Sort} method, combining local sorting and data exchange between processes to achieve the final result. The program validates the sorting and compares the performance of the parallel implementation for different values of \( q \) and \( p \). To evaluate the efficiency of the parallel approach, the program was tested on the Aristotelis cluster for high-scale performance as well as tested against \texttt{qSort} and serial \texttt{BitonicSort} to verify speedup achievement.
+    
+    You can find the source code of our implementation on this \href {https://github.com/mariaxarisi/Bitonic-Sort}{Github repository}.
 \end{abstract}
 
 \tableofcontents
